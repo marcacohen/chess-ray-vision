@@ -33,7 +33,8 @@ class Logger(object):
                 s = StringIO()
             except:
                 s = BytesIO()
-            Image.fromarray(s).save(format="png")
+            arr = np.asarray(img)
+            Image.fromarray(arr).save(s, format="png")
 
             # Create an Image object
             img_sum = v1summary.Summary.Image(encoded_image_string=s.getvalue(),
