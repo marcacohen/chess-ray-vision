@@ -5,6 +5,7 @@ import tensorflow as tf
 import tensorflow.compat.v1.summary as v1summary
 import numpy as np
 from PIL import Image
+from torchvision import transforms
 
 try:
     from StringIO import StringIO  # Python 2.7
@@ -33,8 +34,7 @@ class Logger(object):
                 s = StringIO()
             except:
                 s = BytesIO()
-            from torchvision import transforms
-            im = transforms.ToPILImage()(img).convert("RGB")
+            im = transforms.ToPILImage()(img)
             im.save(s, format="png")
 
             # Create an Image object
