@@ -33,6 +33,7 @@ class Logger(object):
                 s = StringIO()
             except:
                 s = BytesIO()
+            img = np.asarray(img)
             Image.fromarray(img).save(s, format="png")
 
             # Create an Image object
