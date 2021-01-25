@@ -33,8 +33,9 @@ class Logger(object):
                 s = StringIO()
             except:
                 s = BytesIO()
-            arr = np.asarray(img)
-            Image.fromarray(arr).save(s, format="png")
+            from torchvision import transforms
+            im = transforms.ToPILImage()(img).convert("RGB")
+            im.save(s, format="png")
 
             # Create an Image object
             img_sum = v1summary.Summary.Image(encoded_image_string=s.getvalue(),
