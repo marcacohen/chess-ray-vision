@@ -2,7 +2,7 @@
 
 # AND THIS https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard/main.py
 import tensorflow as tf
-import tensorflow.compat.v1.summary as summary
+import tensorflow.compat.v1.summary as v1summary
 import numpy as np
 import scipy.misc 
 try:
@@ -15,11 +15,11 @@ class Logger(object):
     
     def __init__(self, log_dir):
         """Create a summary writer logging to log_dir."""
-        self.writer = summary.FileWriter(log_dir)
+        self.writer = v1summary.FileWriter(log_dir)
 
     def scalar_summary(self, tag, value, step):
         """Log a scalar variable."""
-        summary = summary.Summary(value=[summary.Summary.Value(tag=tag, simple_value=value)])
+        summary = v1summary.Summary(value=[v1summary.Summary.Value(tag=tag, simple_value=value)])
         self.writer.add_summary(summary, step)
 
     def image_summary(self, tag, images, step):
@@ -35,14 +35,14 @@ class Logger(object):
             scipy.misc.toimage(img).save(s, format="png")
 
             # Create an Image object
-            img_sum = summary.Summary.Image(encoded_image_string=s.getvalue(),
+            img_sum = v1summary.Summary.Image(encoded_image_string=s.getvalue(),
                                        height=img.shape[0],
                                        width=img.shape[1])
             # Create a Summary value
-            img_summaries.append(summary.Summary.Value(tag='%s/%d' % (tag, i), image=img_sum))
+            img_summaries.append(v1summary.Summary.Value(tag='%s/%d' % (tag, i), image=img_sum))
 
         # Create and write Summary
-        summary = summary.Summary(value=img_summaries)
+        summary = v1summary.Summary(value=img_summaries)
         self.writer.add_summary(summary, step)
         
     def histo_summary(self, tag, values, step, bins=1000):
@@ -69,6 +69,6 @@ class Logger(object):
             hist.bucket.append(c)
 
         # Create and write Summary
-        summary = summary.Summary(value=[summary.Summary.Value(tag=tag, histo=hist)])
+        summary = v1summary.Summary(value=[v1summary.Summary.Value(tag=tag, histo=hist)])
         self.writer.add_summary(summary, step)
         self.writer.flush()
