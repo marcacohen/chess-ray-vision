@@ -28,10 +28,10 @@ class Logger(object):
 
         with self.writer.as_default():
             for i, img in enumerate(images):
-                shape = [1] + list(img.shape)
-                print('cur shape:', img.shape, 'new shape:', shape)
-                im = np.reshape(img, shape))
-                tf.summary.image(tag + str(i), im, step=step)
+                #shape = [1] + list(img.shape)
+                print('cur shape:', img.shape)
+                #im = np.reshape(img, shape))
+                #tf.summary.image(tag + str(i), im, step=step)
                 self.writer.flush()
 
     def histo_summary(self, tag, values, step, bins=1000):
