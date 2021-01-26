@@ -29,7 +29,7 @@ class Logger(object):
         with self.writer.as_default():
             for i, img in enumerate(images):
                 #shape = [1] + list(img.shape)
-                print('cur shape:', img.shape)
+                print('cur shape:' + img.shape, flush=True)
                 #im = np.reshape(img, shape))
                 #tf.summary.image(tag + str(i), im, step=step)
                 self.writer.flush()
