@@ -28,7 +28,7 @@ class Logger(object):
 
         with self.writer.as_default():
             for i, im in enumerate(images):
-                img = im[None, :, :, :])
+                img = im[None, :, :, :]
                 tf.summary.image(tag + str(i), img, step=step)
                 self.writer.flush()
 
