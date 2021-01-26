@@ -19,6 +19,7 @@ class Logger(object):
     def scalar_summary(self, tag, value, step):
         """Log a scalar variable."""
 
+        return
         with self.writer.as_default():
             tf.summary.scalar(tag, value, step=step)
             self.writer.flush()
@@ -26,6 +27,7 @@ class Logger(object):
     def image_summary(self, tag, images, step):
         """Log a list of images."""
 
+        return
         with self.writer.as_default():
             for i, im in enumerate(images):
                 img = im[None, :, :, :]
@@ -35,6 +37,7 @@ class Logger(object):
     def histo_summary(self, tag, values, step, bins=1000):
         """Log a histogram of the tensor of values."""
 
+        return
         with self.writer.as_default():
             tf.summary.histogram(tag, values, step=step, buckets=bins)
             self.writer.flush()
