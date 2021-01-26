@@ -2,11 +2,8 @@
 
 # AND THIS https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard/main.py
 import tensorflow as tf
-import tensorflow.compat.v1.summary as v1summary
 import numpy as np
-from PIL import Image
-from torchvision import transforms
-
+import scipy.misc 
 try:
     from StringIO import StringIO  # Python 2.7
 except ImportError:
@@ -17,37 +14,23 @@ class Logger(object):
     
     def __init__(self, log_dir):
         """Create a summary writer logging to log_dir."""
-        self.writer = v1summary.FileWriter(log_dir)
+        self.writer = tf.summary.create_file_writer(log_dir)
 
     def scalar_summary(self, tag, value, step):
         """Log a scalar variable."""
-        summary = v1summary.Summary(value=[v1summary.Summary.Value(tag=tag, simple_value=value)])
-        self.writer.add_summary(summary, step)
+
+        with self.writer.as_default():
+            tf.summary.scalar(tag, value, step=step)
+            self.writer.flush()
 
     def image_summary(self, tag, images, step):
         """Log a list of images."""
 
-        img_summaries = []
-        for i, img in enumerate(images):
-            # Write the image to a string
-            try:
-                s = StringIO()
-            except:
-                s = BytesIO()
-            im = transforms.ToPILImage()(img)
-            im.save(s, format="png")
+        with self.writer.as_default():
+            for i, img in enumerate(images):
+                tf.summary.image(tag + str(i), img, step=step)
+                self.writer.flush()
 
-            # Create an Image object
-            img_sum = v1summary.Summary.Image(encoded_image_string=s.getvalue(),
-                                       height=img.shape[0],
-                                       width=img.shape[1])
-            # Create a Summary value
-            img_summaries.append(v1summary.Summary.Value(tag='%s/%d' % (tag, i), image=img_sum))
-
-        # Create and write Summary
-        summary = v1summary.Summary(value=img_summaries)
-        self.writer.add_summary(summary, step)
-        
     def histo_summary(self, tag, values, step, bins=1000):
         """Log a histogram of the tensor of values."""
 
@@ -71,7 +54,6 @@ class Logger(object):
         for c in counts:
             hist.bucket.append(c)
 
-        # Create and write Summary
-        summary = v1summary.Summary(value=[v1summary.Summary.Value(tag=tag, histo=hist)])
-        self.writer.add_summary(summary, step)
-        self.writer.flush()
+        with self.writer.as_default():
+            tf.summary.image(tag, hist, step=step, buckets=bins)
+            self.writer.flush()
