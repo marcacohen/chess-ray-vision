@@ -26,7 +26,7 @@ class Logger(object):
     def image_summary(self, tag, images, step):
         """Log a list of images."""
 
-        return
+        #return
         with self.writer.as_default():
             for i, im in enumerate(images):
                 img = im[None, :, :, :]
