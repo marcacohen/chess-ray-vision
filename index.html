@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Display Webcam Stream</title>
+ 
+<style>
+</style>
+</head>
+ 
+<body>
+    <br />
+    <div class="select">
+        <label for="videoSource">Video source: </label><select id="videoSource"></select>
+    </div>
+    <br />
+    <div id="container">
+        <video onclick="image_click()" width="1000" id="video" playsinline autoplay></video>
+    </div>
+    <br />
+    <canvas id="canvas" width="500" style="overflow:auto"></canvas>
+    <img id="board" width="500" src="">
+</body>
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script>
+
+function image_click() {
+    window.requestAnimationFrame(capture);
+}
+
+function capture() {
+    let canvas = document.getElementById('canvas');     
+    let video = document.getElementById('video');
+    let width = 500 * window.devicePixelRatio;
+    let height = (video.videoHeight / video.videoWidth) * width;
+    canvas.width = width;
+    canvas.height = height;
+    // downscale the presentation
+    canvas.style.width = (canvas.width / devicePixelRatio).toString() + "px";
+    canvas.style.height = (canvas.height / devicePixelRatio).toString() + "px";
+    canvas.getContext('2d').drawImage(video, 0, 0, width, height);  
+    canvas.toBlob() = (blob) => {
+      const img = new Image();
+      img.src = window.URL.createObjectUrl(blob);
+    };
+}
+
+/*
+*  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+*
+*  Use of this source code is governed by a BSD-style license
+*  that can be found in the LICENSE file in the root of the source
+*  tree.
+*/
+
+'use strict';
+
+const videoElement = document.querySelector('video');
+const videoSelect = document.querySelector('select#videoSource');
+const selectors = [videoSelect];
+
+function gotDevices(deviceInfos) {
+  // Handles being called several times to update labels. Preserve values.
+  const values = selectors.map(select => select.value);
+  selectors.forEach(select => {
+    while (select.firstChild) {
+      select.removeChild(select.firstChild);
+    }
+  });
+  for (let i = 0; i !== deviceInfos.length; ++i) {
+    const deviceInfo = deviceInfos[i];
+    const option = document.createElement('option');
+    option.value = deviceInfo.deviceId;
+    if (deviceInfo.kind === 'videoinput') {
+      option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
+      videoSelect.appendChild(option);
+    } else {
+      console.log('Some other kind of source/device: ', deviceInfo);
+    }
+  }
+  selectors.forEach((select, selectorIndex) => {
+    if (Array.prototype.slice.call(select.childNodes).some(n => n.value === values[selectorIndex])) {
+      select.value = values[selectorIndex];
+    }
+  });
+}
+
+navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+
+function gotStream(stream) {
+  window.stream = stream; // make stream available to console
+  videoElement.srcObject = stream;
+  // Refresh button list in case labels have become available
+  return navigator.mediaDevices.enumerateDevices();
+}
+
+function handleError(error) {
+  console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+}
+
+function start() {
+  if (window.stream) {
+    window.stream.getTracks().forEach(track => {
+      track.stop();
+    });
+  }
+  const videoSource = videoSelect.value;
+  const constraints = {
+    video: {deviceId: videoSource ? {exact: videoSource} : undefined}
+  };
+  navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
+}
+
+videoSelect.onchange = start;
+
+start();
+
+</script>
+</html>
